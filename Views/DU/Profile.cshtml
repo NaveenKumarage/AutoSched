@@ -1,0 +1,372 @@
+﻿@using CRUD_OperationByMeUsingJqueryAjaxMvc.Models;
+@model dynamic
+
+@if (Session["UserName"] == null)
+{
+    @Html.Action("Login", "Login");
+    Layout = null;
+}
+else
+{
+    @Html.Action("CheckIsFirstAttempt", "Login");
+    @*@Html.Action("CheckPermission", "UserSecurity", new { PageName = "Profile", EmployeeId = Convert.ToInt64(Session["EmployeeId"]) });*@
+    ViewBag.Title = "Profile";
+    <input type="hidden" id="EmpId" value="@Session["EmployeeId"]" />
+    <input type="hidden" id="UserName" value="@Session["UserName"]" />
+
+    <h2 class="mobile-show pt-2 pb-2">Profile</h2>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="col-md-3 col-sm-3  profile_left">
+                        <div class="profile_img">
+                            <div id="crop-avatar">
+                                <!-- Current avatar -->
+                                <img class="img-responsive avatar-view" src="/Home/LoadProfileImage?EmployeeId=@Session["EmployeeId"]" alt="Avatar" title="Change the avatar" id="imagePreview" width="200" height="200">
+                                <input type="file" name="ImageUpload" id="ImageUpload" accept="image/*" />
+                            </div>
+                        </div>
+                        <h3 id="hEmployeeName"></h3>
+                        <ul class="list-unstyled user_data">
+                            <li>
+                                <i class="fa fa-briefcase user-profile-icon"></i> <label id="lblDesignation"></label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-9 col-sm-9 ">
+                        <div class="x_content">
+                            <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Profile</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Contacts</a>
+                                </li>
+                                @*<li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Skils</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="Qualification-tab" data-toggle="tab" href="#Qualification" role="tab" aria-controls="Qualification" aria-selected="false">Qualification</a>
+                                    </li>*@
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <div class="form-horizontal form-label-left">
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Employee Code</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtEmployeeCode" readonly />
+                                            </div>
+                                        </div>
+                                       @* <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">EPF Number</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtEpfNo" readonly />
+                                            </div>
+                                        </div>*@
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">First Name</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtFirstName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Last Name</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtLastName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Initials</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtInitials" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Full Name</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtFullName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Call Name</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtCallName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Gender</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <p>
+                                                    Male:
+                                                    <input type="radio" class="flat" name="gender" id="genderM" value="Male" checked="" required /> Female:
+                                                    <input type="radio" class="flat" name="gender" id="genderF" checked="" value="Female" />
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Status</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <p>
+                                                    Single:
+                                                    <input type="radio" class="flat" name="status" id="statusS" value="0" checked="" required /> Married:
+                                                    <input type="radio" class="flat" name="status" id="statusM" value="1" />
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Date of Birth</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="single_cal1" aria-describedby="inputGroupPrepend" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="form-horizontal form-label-left">
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Address</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <textarea type='text' class="form-control" id="txtaddress"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Postal Code</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtPostalCode" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Contact No (Mobile)</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='number' class="form-control" id="txtContactNoMobile" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Contact No (Home)</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='number' class="form-control" id="txtContactNoHome" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Office No</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='number' class="form-control" id="txtOfficeNo" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Email</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtEmail" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">NIC No</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtNicNo" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Passport No</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtPassportNo" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Passport Expiary Date</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="dateExpiaryDate" aria-describedby="inputGroupPrepend" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Emergency Contact Person</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtEmergancyContactPerson" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Emergency Contact No</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='number' class="form-control" id="txtEmergancyContactNo" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row ">
+                                            <label class="control-label col-md-3 col-sm-3 ">Relationship</label>
+                                            <div class="col-md-9 col-sm-9 ">
+                                                <input type='text' class="form-control" id="txtRelationship" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                        xxx Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo
+                                        booth letterpress, commodo enim craft beer mlkshk
+                                    </div>
+                                    <div class="tab-pane fade" id="Qualification" role="tabpanel" aria-labelledby="Qualification-tab">
+                                        yyy Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo
+                                        booth letterpress, commodo enim craft beer mlkshk aliquip
+                                    </div>*@
+                            </div>
+
+
+                            <div class="text-right pr-1">
+                                    <a class="btn btn-secondary" id="resetBtn">Reset</a>
+                                    <a class="btn btn-primary" id="updateBtn">Update</a>
+                                </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+
+        $(document).ready(function () {
+            GetEmployeeDetails();
+        });
+
+        //Get Employee Details
+        function GetEmployeeDetails() {
+            $.ajax({
+                type: "Get",
+                url: "/Profile/GetEmployeeDetails?EmployeeId=" + $("#EmpId").val(),
+                success: function (result) {
+
+                    //Profile Details
+                    $("#txtEmployeeCode").val(result.dataList[0].EmployeeCode);
+                    $("#txtEpfNo").val(result.dataList[0].EPFNo);
+                    $("#txtFirstName").val(result.dataList[0].FirstName);
+                    $("#txtLastName").val(result.dataList[0].LastName);
+                    $("#txtInitials").val(result.dataList[0].NameWithInitial);
+                    $("#txtFullName").val(result.dataList[0].FullName);
+                    $("#txtCallName").val(result.dataList[0].CallName);
+                    $("input[name=gender][value='" + result.dataList[0].Gender + "']").prop("checked", true).change();
+                    $("input[name=status][value='" + result.dataList[0].Status + "']").prop("checked", true).change();
+                    $('#single_cal1').data('daterangepicker').setStartDate(result.dataList[0].DateOfBirth);
+                    $('#hEmployeeName').html(result.dataList[0].FirstName + " " + result.dataList[0].LastName);
+                    $('#lblDesignation').html(result.dataList[0].DesignationName);
+
+                    //Contact Details
+                    $("#txtaddress").val(result.dataList[0].Address);
+                    $("#txtPostalCode").val(result.dataList[0].PostalCode);
+                    $("#txtContactNoMobile").val(result.dataList[0].MobileNo);
+                    $("#txtContactNoHome").val(result.dataList[0].HomeContactNo);
+                    $("#txtOfficeNo").val(result.dataList[0].OfficeContactNo);
+                    $("#txtEmail").val(result.dataList[0].Email);
+                    $("#txtNicNo").val(result.dataList[0].NIC);
+                    $("#txtPassportNo").val(result.dataList[0].PassportNo);
+                    if (result.dataList[0].PassPortExpiryDate != null) {
+                        $('#dateExpiaryDate').daterangepicker({
+                            singleDatePicker: true,
+                            singleClasses: "picker_2",
+                        }, function (start, end, label) {
+                            console.log(start.toISOString(), end.toISOString(), label);
+                        });
+                        $('#dateExpiaryDate').data('daterangepicker').setStartDate(result.dataList[0].PassPortExpiryDate);
+                        $('#dateExpiaryDate').data('daterangepicker').setEndDate(result.dataList[0].PassPortExpiryDate);
+                    } else {
+                        $('#dateExpiaryDate').daterangepicker({
+                            singleDatePicker: true,
+                            singleClasses: "picker_2",
+                            autoUpdateInput: false
+                        }, function (start, end, label) {
+                            console.log(start.toISOString(), end.toISOString(), label);
+                        });
+                    }
+                    $("#txtEmergancyContactPerson").val(result.dataList[0].EmergencyContactPerson);
+                    $("#txtEmergancyContactNo").val(result.dataList[0].EmergencyContactNo);
+                    $("#txtRelationship").val(result.dataList[0].RelationshipOfContactPerson);
+                }
+            })
+        }
+
+        function ShowImagePreview(imageUploader, previewImage) {
+            if (imageUploader.files && imageUploader.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $(previewImage).attr('src', e.target.result);
+                }
+                reader.readAsDataURL(imageUploader.files[0]);
+            }
+        }
+
+        $('#updateBtn').click(function () {
+            alert(1);
+            if (window.FormData !== undefined) {
+                var fileUpload = $("#ImageUpload").get(0);
+                var files = fileUpload.files;
+                alert(files);
+                // Create FormData object
+                var fileData = new FormData();
+
+                // Looping over all files and add it to FormData object
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+
+                fileData.append('EmployeeId', $("#EmpId").val());
+                fileData.append('FirstName', $("#txtFirstName").val());
+                fileData.append('LastName', $("#txtLastName").val());
+                fileData.append('Initials', $("#txtInitials").val());
+                fileData.append('FullName', $("#txtFullName").val());
+                fileData.append('CallName', $("#txtCallName").val());
+                fileData.append('Gender', $('input[name="gender"]:checked').val());
+                fileData.append('Status', $('input[name="status"]:checked').val());
+                fileData.append('DateOfBirth', $("#single_cal1").val());
+                fileData.append('Address', $("#txtaddress").val());
+                fileData.append('PostalCode', $("#txtPostalCode").val());
+                fileData.append('ContactNoMobile', $("#txtContactNoMobile").val());
+                fileData.append('ContactNoHome', $("#txtContactNoHome").val());
+                fileData.append('OfficeNo', $("#txtOfficeNo").val());
+                fileData.append('Email', $("#txtEmail").val());
+                fileData.append('NicNo', $('#txtNicNo').val());
+                fileData.append('PassportNo', $('#txtPassportNo').val());
+                fileData.append('PassportExpiaryDate', $("#dateExpiaryDate").val());
+                fileData.append('EmergencyContactPerson', $('#txtEmergancyContactPerson').val());
+                fileData.append('EmergencyContactNo', $("#txtEmergancyContactNo").val());
+                fileData.append('Relationship', $("#txtRelationship").val());
+                fileData.append('UserName', $("#UserName").val());
+
+                $.ajax({
+                    type: "Post",
+                    url: "/Profile/UpdateProfileDetails",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        if (result.success) {
+                            $.notify(result.message, "success");
+                            //ClearControl();
+                        }
+                        else {
+                            $.notify(result.message, "error");
+                        }
+                    },
+                })
+            }
+        })
+
+        $('#resetBtn').click(function () {
+            GetEmployeeDetails();
+            $("#ImageUpload").val('');
+        })
+
+    </script>
+}
