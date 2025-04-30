@@ -1,0 +1,95 @@
+﻿@model List<SelectListItem>
+
+@if (Session["UserName"] == null)
+{
+    @Html.Action("Login", "Login");
+    Layout = null;
+}
+else
+{
+    @Html.Action("CheckIsFirstAttempt", "Login");
+    @Html.Action("CheckPermission", "UserSecurity", new { PageName = "MenuRights", EmployeeId = Convert.ToInt64(Session["EmployeeId"]) });
+    ViewBag.Title = "Menu Rights";
+    <style type="text/css">
+        .multi-list {
+            float: left;
+            padding-right: 50px;
+        }
+
+        .clear {
+            clear: both;
+        }
+    </style>
+    <div id="full">
+
+        <input type="hidden" id="EmpId" value="@Session["EmployeeId"]" />
+        <input type="hidden" id="UserName" value="@Session["UserName"]" />
+        <h2 class="mobile-show pt-2 pb-2">Menu Rights</h2>
+        <div class="col-md-12 ">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="form-group">
+                        <div class="">
+                            <label class="col-form-label label-align text-left d-inline-block pr-2">User Type</label>
+                            <div class="d-inline-block pr-2 max250">
+                                <select class="form-control" style="height:35px" id="cmbUserTypes"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <div id="id1" class="wr-menuRights">
+                        @Html.Partial("_MenuRightsCheckList")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            LoadComboBoxData();
+            GetMenuRights();
+        })
+
+        $("#cmbUserTypes").change(function () {
+            GetMenuRights();
+        })
+
+        function GetMenuRights() {
+            var userTypeId = $('#cmbUserTypes').find(":selected").val();
+            if (typeof userTypeId === "undefined") {
+                userTypeId = 0;
+            }
+            $.ajax({
+                type: "Post",
+                url: "/UserSecurity/GetMenuRights?UserTypeId=" + userTypeId,
+                success: function (result) {
+                    $("#id1").html(result);
+                },
+                contentType: 'application/json'
+            })
+        }
+
+        function LoadComboBoxData() {
+            $.ajax({
+                type: "POST",
+                url: "/UserSecurity/GetUserTypesForCombo",
+                success: function (Result) {
+                    $("#cmbUserTypes").empty();
+                    $("#cmbUserTypes").append($("<option></option>").val("0").html("<--Select User Type-->"));
+                    $.each(Result.dataList, function (key, value) {
+                        $("#cmbUserTypes").append($("<option></option>").val(value.UserTypeid).html(value.UserTypeName));
+                    });
+                }
+
+            });
+        }
+
+    </script>
+
+
+}
+
