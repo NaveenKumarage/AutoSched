@@ -7,6 +7,7 @@ Autosched is a web application developed to streamline the process of exams sche
 ## 💡 Features
 - Scheduling Exams
 - Scheduling Presentations
-
+- Presentation Summarization
+- Report Generation
 
 
