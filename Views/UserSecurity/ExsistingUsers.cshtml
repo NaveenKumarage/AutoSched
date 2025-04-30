@@ -1,0 +1,296 @@
+﻿@using CRUD_OperationByMeUsingJqueryAjaxMvc.Models;
+@model dynamic
+
+@if (Session["UserName"] == null || Session["CompanyId"] == null || Session["UserId"] == null)
+{
+    @Html.Action("Login", "Login");
+    Layout = null;
+}
+else
+{
+    @Html.Action("CheckIsFirstAttempt", "Login");
+    @Html.Action("CheckPermission", "UserSecurity", new { PageName = "ExsistingUsers", EmployeeId = Convert.ToInt64(Session["EmployeeId"]) });
+    <!-- Datatables -->
+    <link href="~/Content/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="~/Content/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+
+    <style>
+        table.dataTable tbody th, table.dataTable tbody td {
+            padding: 4px 4px; /* e.g. cha   nge 8x to 4px here */
+        }
+
+        .btn-esm {
+            padding: 1px 2px 1px 2px;
+        }
+    </style>
+
+    ViewBag.Title = "Exsisting Users";
+    <input type="hidden" id="EmpId" value="@Session["EmployeeId"]" />
+    <input type="hidden" id="UserName" value="@Session["UserName"]" />
+    <input type="hidden" id="CompanyId" value="@Session["CompanyId"]" />
+    <input type="hidden" id="UserId" />
+    <input type="hidden" id="IsBlocked" />
+    <input type="hidden" id="UserTypeId" />
+    <h2 class="mobile-show pt-2 pb-2">User Creation</h2>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="x_panel">
+                <div class="table-responsive">
+                    <table class="table" id="usersTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Emp Code</th>
+                                <th>Employee Name</th>
+                                <th>User Type</th>
+                                <th>Reset</th>
+                                <th>Block/Unblock</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Create a popup modal for Block/Unblock Approve confirmation*@
+    <div class="modal fade" id="ApproveConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalHeader"></h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body"><p id="modalBody"></p></div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
+                    <a href="#" class="btn btn-primary btn-sm" id="ConfirmBtnApprove">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Create a popup modal for Reset Approve confirmation*@
+    <div class="modal fade" id="ResetApproveConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Resetting User</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Are you sure want to reset this user?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
+                    <a href="#" class="btn btn-primary btn-sm" id="ConfirmBtnResetApprove">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Create a popup modal for Change UserType confirmation*@
+    <div class="modal fade" id="ChangeUserTypeConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Resetting User</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Are you sure want to change usertype for this user?</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" type="button" data-dismiss="modal">Cancel</button>
+                    <a href="#" class="btn btn-primary btn-sm" id="ConfirmBtnChangeUserType">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            //var EmpId = $('#EmpId').val();
+            var i = 0;
+            var table = $('#usersTable').DataTable({
+                "ajax": {
+                    "url": '/UserSecurity/GetExistingUsers?CompanyId=' + $('#CompanyId').val(),
+                    "type": "get",
+                    "datatype": "json"
+                },
+                select: true,
+                "columns": [
+                    { "data": "IsActive", "autoWidth": true, "visible": false },
+                    { "data": "UserTypeId", "autoWidth": true, "visible": false },
+                    { "data": "UserId", "autoWidth": true, "visible": false },
+                    { "data": "EmployeeCode", "autoWidth": true },
+                    { "data": "Name", "autoWidth": true },
+                    {
+                        data: "UserTypes",
+                        render: function (data, type, row) {
+                            var ddl = "<select size='1' id='row-1-division' name='row-1-division' onchange='ChangeUserType(this.value," + row.UserId + ");'>";
+                            $.each(data, function (key, value) {
+                                if (row.UserTypeId === value.UserTypeid) {
+                                    ddl = ddl + "<option value=" + value.UserTypeid + " selected>" + value.UserTypeName + "</option>";
+                                } else {
+                                    ddl = ddl + "<option value=" + value.UserTypeid + ">" + value.UserTypeName + "</option>";
+                                }
+                            })
+                            ddl += "</select>";
+                            return ddl;
+                        }
+                    },
+                    {
+                        "data": "UserId", "Width": "50px", "render": function (data) {
+                            return '<a class="btn btn-warning btn-esm" onclick="ResetUser(' + data + ')"><i class="fa fa-lock mr-2" style="color:white"> Reset</i></a>';
+                        }
+                    },
+                    {
+                        "data": "UserId", "Width": "50px", "render": function (data, type, row, meta) {
+
+                            if (row.IsActive == false) {
+                                return '<a class="btn btn-primary btn-esm" onclick="BlockUnblockUsers(' + data + ' , ' + false + ')"><i class="fa fa-unlock mr-2" style="color:white"> Unblock</i></a>';
+                            } else if (row.IsActive == true) {
+                                return '<a class="btn btn-danger btn-esm" onclick="BlockUnblockUsers(' + data + ' , ' + true + ')"><i class="fa fa-lock mr-2" style="color:white"> Block</i></a>';
+                            } else {
+
+                            }
+                        }
+                    }
+                ],
+                'select': {
+                    'style': 'multi'
+                },
+                'order': [[3, 'asc']]
+            });
+
+            //var table = $('#usersTable').DataTable();
+            //table
+            //    .on('select', function (e, dt, type, indexes) {
+            //        var userId = dt.row({ selected: true }).data().UserId
+            //        alert(userId);
+            //    })
+
+        })
+
+        //$('#row-1-division').change(function () {
+        //    // $(this).val() will work here
+        //    alert(1);
+        //});
+
+        function ChangeUserType(UserTypeId, UserId) {
+            $("#UserId").val(UserId);
+            $("#UserTypeId").val(UserTypeId);
+            $("#ChangeUserTypeConfirmation").modal("show");
+        }
+
+        $("#ConfirmBtnChangeUserType").click(function () {
+            var userId = $("#UserId").val();
+            var userTypeId = $("#UserTypeId").val();
+            var updatedUser = $("#UserName").val();
+
+            $.ajax({
+                type: "Post",
+                url: "/UserSecurity/ChangeUserType?UserId=" + userId + "&UserTypeId=" + userTypeId + "&UpdatedUser=" + updatedUser,
+                success: function (result) {
+                    if (result.success) {
+                        $.notify("Submitted Successfully", "success");
+                        $('#usersTable').DataTable().ajax.reload();
+                    } else {
+                        $.notify(result.message, "error");
+                    }
+                    $("#ChangeUserTypeConfirmation").modal("hide");
+                }
+            })
+        })
+
+        function BlockUnblockUsers(UserId, IsBlocked) {
+            $("#UserId").val(UserId);
+            $("#IsBlocked").val(IsBlocked);
+            if (IsBlocked) {
+                $("#modalHeader").text('Confirm Blocking User');
+                $("#modalBody").text('Are you sure want to block this user?');
+            } else {
+                $("#modalHeader").text('Confirm Unblocking User');
+                $("#modalBody").text('Are you sure want to unblock this user?');
+            }
+            $("#modalHeader").val(IsBlocked);
+            $("#ApproveConfirmation").modal("show");
+        }
+
+        function ResetUser(UserId) {
+            $("#UserId").val(UserId);
+            $("#ResetApproveConfirmation").modal("show");
+        }
+
+        $("#ConfirmBtnApprove").click(function () {
+            var userId = $("#UserId").val();
+            var isBlocked = $("#IsBlocked").val();
+            var updatedUser = $("#UserName").val();
+            $.ajax({
+                type: "Post",
+                url: "/UserSecurity/BlockUnblockUsers?UserId=" + userId + "&IsBlocked=" + isBlocked + "&UpdatedUser=" + updatedUser,
+                success: function (result) {
+                    if (result.success) {
+                        $.notify("Submitted Successfully", "success");
+                        $('#usersTable').DataTable().ajax.reload();
+                    } else {
+                        $.notify(result.message, "error");
+                    }
+                    $("#ApproveConfirmation").modal("hide");
+                }
+            })
+        })
+
+        $("#ConfirmBtnResetApprove").click(function () {
+            var userId = $("#UserId").val();
+            var updatedUser = $("#UserName").val();
+
+            $.ajax({
+                type: "Post",
+                url: "/UserSecurity/ResetUser?UserId=" + userId + "&UpdatedUser=" + updatedUser,
+                success: function (result) {
+                    if (result.success) {
+                        $.notify("Submitted Successfully", "success");
+                        $('#usersTable').DataTable().ajax.reload();
+                    } else {
+                        $.notify(result.message, "error");
+                    }
+                    $("#ResetApproveConfirmation").modal("hide");
+                }
+            })
+        })
+
+
+    </script>
+
+    <!-- Datatables -->
+    <script src="~/Content/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+    <script src="~/Content/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+    <script src="~/Content/vendors/jszip/dist/jszip.min.js"></script>
+    <script src="~/Content/vendors/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/Content/vendors/pdfmake/build/vfs_fonts.js"></script>
+    <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
+}

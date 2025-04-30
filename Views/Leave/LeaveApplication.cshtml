@@ -1,0 +1,649 @@
+﻿@using CRUD_OperationByMeUsingJqueryAjaxMvc.Models;
+@model dynamic
+
+@if (Session["UserName"] == null || Session["CompanyId"] == null || Session["UserId"] == null || Session["UserTypeId"] == null)
+{
+    @Html.Action("Login", "Login");
+    Layout = null;
+}
+else
+{
+    @Html.Action("CheckIsFirstAttempt", "Login");
+    @Html.Action("CheckPermission", "UserSecurity", new { PageName = "LeaveApplication", EmployeeId = Convert.ToInt64(Session["EmployeeId"]) });
+    ViewBag.Title = "Absent Application";
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+    </style>
+    <input type="hidden" id="EmpId" value="@Session["EmployeeId"]" />
+    <input type="hidden" id="UserTypeId" value="@Session["UserTypeId"]" />
+    <input type="hidden" id="UserName" value="@Session["UserName"]" />
+    <input type="hidden" id="HfCalendarDate" />
+    <h2 class="mobile-show pt-2 pb-2">Exam and Presentation Absent Application</h2>
+
+    <div class="x_panel">
+        <div class="x_title">
+            <h6>Exam and Presentation Absent Application</h6>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-horizontal form-label-left">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-4">
+                                <label for="cmbLeaveType">Student Name<span class="red">*</span></label>
+                                <input type="text" class="form-control" id="txtTotal" placeholder="Student Name">
+                                @*  <select class="leave-employee form-control" id="cmbLeaveEmployee">
+                    @foreach (Employee levEmployees in Model.LeaveEmployees)
+                    {
+                        <option value="@levEmployees.EmployeeId">@levEmployees.EmployeeCode/@levEmployees.FirstName @levEmployees.LastName</option>
+                    }
+                </select>*@
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="cmbLeaveType">Student No  <span class="red">*</span></label>
+                                            <input type="text" class="form-control" id="txtTotal" placeholder="Student No">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="cmbLeaveType">Absent Reason <span class="red">*</span></label>
+                                            <input type="text" class="form-control" id="txtTotal" placeholder="Absent Reason">
+                                            @*<select class="leave-type form-control" id="cmbLeaveType">
+                @foreach (Lev_LeaveType leavetypes in Model.LeaveTypes)
+                {
+                    <option value="@leavetypes.LeaveTypeId">@leavetypes.LeaveDescription</option>
+                }
+            </select>*@
+                                        </td>
+                                        @*<td>
+            <div class="">
+                <label for="txtLeaveBalance">Available</label>
+                <input type="text" class="form-control" id="txtLeaveBalance" readonly>
+                <div class="valid-feedback">
+                    Looks good!
+                </div
+
+            </div>
+        </td>*@
+                                        <td>
+                                            <label for="single_cal1">Exam Date <span class="red">*</span></label>
+                                            <div class="input-group mb-0">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                                                </div>
+                                                <input type="text" class="form-control" id="single_cal1" placeholder="Username" aria-describedby="inputGroupPrepend inputSuccess2Status4" required>
+                                                <span id="inputSuccess2Status4" class="sr-only">(success)</span>
+                                                <div class="invalid-feedback">
+                                                    Please choose a username.
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="cmbLeaveType">Invigilator Name  <span class="red">*</span></label>
+                                            <input type="text" class="form-control" id="txtTotal" placeholder="Invigilator Name">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="cmbLeaveType">Exam Type <span class="red">*</span></label>
+                                            <select class="select form-control" id="cmbLeaveType" name="ExamType">
+                                                <option value="Quiz">Quiz</option>
+                                                <option value="Practical Exam">Practical Exam</option>
+                                                <option value="SpotTest">Spot Test</option>
+                                                <option value="Mid Exam">Mid Exam</option>
+                                                <option value="Final Exam">Final Exam</option>
+                                            </select>
+                                        </td>
+                                        @*<td>
+                            <div class="">
+                                <label for="txtLeaveBalance">Available</label>
+                                <input type="text" class="form-control" id="txtLeaveBalance" readonly>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </td>*@
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <!--<div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="cmbLeaveType">Leave Reson <span class="red">*</span></label>
+                                            <input type="text" class="form-control" id="txtTotal" placeholder="Leave Reson">-->
+                                            @*<select class="leave-type form-control" id="cmbLeaveType">
+                                @foreach (Lev_LeaveType leavetypes in Model.LeaveTypes)
+                                {
+                                    <option value="@leavetypes.LeaveTypeId">@leavetypes.LeaveDescription</option>
+                                }
+                            </select>*@
+                                        <!--</td>-->
+                                        @*<td>
+                            <div class="">
+                                <label for="txtLeaveBalance">Available</label>
+                                <input type="text" class="form-control" id="txtLeaveBalance" readonly>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </td>*@
+                                    <!--</tr>
+                                </table>
+                            </div>
+                        </div>-->
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <table width="100%;" class="apple-leave-table">
+                                    <tr>
+                                        <td>
+                                            <label for="attachmentFile">Attachment (Medical)</label>
+                                            <input type="file"
+                                                   class="form-control"
+                                                   id="attachmentFile"
+                                                   name="attachmentFile"
+                                                   accept=".pdf,.jpg,.png,.doc,.docx" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            @*<div class="col-md-12 mb-3">*@
+                            @*<div class="col-md-2 mb-3">
+                <label for="single_cal1">Exam Date <span class="red">*</span></label>
+                <div class="input-group mb-0">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="single_cal1" placeholder="Username" aria-describedby="inputGroupPrepend inputSuccess2Status4" required>
+                    <span id="inputSuccess2Status4" class="sr-only">(success)</span>
+                    <div class="invalid-feedback">
+                        Please choose a username.
+                    </div>
+                </div>
+            </div>*@
+                            @* <div class="col-md-2 mb-3">
+                <label for="single_cal2">To Date <span class="red">*</span></label>
+                <div class="input-group mb-0">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                    </div>
+                    <input type="text" class="form-control" id="single_cal2" aria-describedby="inputGroupPrepend inputSuccess2Status4" required>
+                    <span id="inputSuccess2Status4" class="sr-only">(success)</span>
+                    <div class="invalid-feedback">
+                        Please choose a username.
+                    </div>
+                </div>
+            </div>*@
+                            @* <div class="col-md-2 mb-3">
+                <label for="validationCustom02">Total</label>
+                <input type="text" class="form-control" id="txtTotal" placeholder="Total" required readonly>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>*@
+                            @*</div>*@
+                        </div>
+                        <div class="form-row" id="divCbs">
+                            <!--<div class="col-md-3 mb-3" id="divCbsSub">
+        <div class="form-check form-check-inline" id="divCbFullDay">
+            <input class="form-check-input" type="checkbox" id="cbFullDay" value="option1">
+            <label class="form-check-label" for="cbFullDay">Full Day</label>
+        </div>-->
+                            @*<div class="form-check form-check-inline" id="divCbHalfDay">
+                <input class="form-check-input" type="checkbox" id="cbHalfDay" value="option2">
+                <label class="form-check-label" for="cbHalfDay">Half Day</label>
+            </div>*@
+                            <!--</div>-->
+                            <div class="col-md-3 mb-3" id="divSession" style="display:none">
+                                <label for="cmbSession">Session<span class="red">*</span></label>
+                                <select class="leave-reason form-control" id="cmbSession">
+                                    <option value="FirstHalf">First Half</option>
+                                    <option value="SecondHalf">Second Half</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3" id="divNumDeductOT" style="display:none">
+                                <label for="cmbHalfShift">Deduct OT<span class="red">*</span></label>
+                                <input type="number" class="form-control" id="numDeductOT" placeholder="Deduct OT" value="0" required>
+                            </div>
+                        </div>
+                        @*<div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="cmbCovPerson">Covering Person <span class="red">*</span></label>
+                <select class="leave-type form-control" id="cmbCovPerson"></select>
+
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label for="cmbReason">Reason<span class="red">*</span></label>
+                <select class="leave-reason form-control" id="cmbReason">
+                    @foreach (Lev_LeaveReason levReason in Model.LeaveReasons)
+                    {
+                        <option value="@levReason.LeaveReasonId">@levReason.LeaveDescription</option>
+                    }
+                </select>
+
+            </div>
+        </div>*@
+                        <div class="form-row" id="sickLeaveAttachement" style="display:none">
+                            <div class="col-md-6 mb-3">
+                                <label for="cmbReason">Choose File<span class="red">*</span></label>
+                                <input type="file" accept="application/PNG,application/pdf,application/jpg" class="form-control" name="fileUpload" id="fileUpload" size="1" />
+                            </div>
+                        </div>
+                        @*<div class="form-row">
+            <div class="col-md-6 mb-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input iCheck" type="checkbox" id="cbWorkflow" value="option1">
+                    <label class="form-check-label " for="cbWorkflow">Workflow</label>
+                </div>
+            </div>
+        </div>*@
+                        <div class="ln_solid"></div>
+                        <div class="text-right pr-1">
+                            <a class="btn btn-secondary" id="resetBtn">Reset</a>
+                            <a class="btn btn-primary" id="applyLeaveBtn">Apply</a>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+        @*</div>*@
+        <div class="custom-loader" style="display:none;">
+            <div class="loader-leave">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    @*</div>*@
+
+}
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $('.leave-type').select2();
+            $('.leave-employee').select2();
+            $('.leave-covering').select2();
+            $('.leave-reason').select2();
+            $('.leave-shift').select2();
+            $("#divNumDeductOT").hide();
+            $('#cmbLeaveEmployee').val($('#EmpId').val());
+            $('#cmbLeaveEmployee').trigger('change');
+           
+            $("#cbFullDay").prop('checked', true);
+
+            var userTypeId = $('#UserTypeId').val();
+            EnableDisable();
+            
+            if (userTypeId == 1) {
+                $("#cbWorkflow").prop('disabled', false);
+                $("#cbWorkflow").prop('checked', true);
+                $('#cmbLeaveEmployee').prop('disabled', false);
+            }
+            else {
+                $("#cbWorkflow").prop('disabled', true);
+                $("#cbWorkflow").prop('checked', true);
+                $('#cmbLeaveEmployee').removeClass('fstdropdown-select').addClass('form-control');
+                $('#cmbLeaveEmployee').prop('disabled', true);
+
+                if (userTypeId == 3029 || userTypeId == 3030 || userTypeId == 3031 || userTypeId == 3032 || userTypeId == 3037 || userTypeId == 3038) {
+                    $('#cmbLeaveEmployee').prop('disabled', false);
+
+                }
+            }
+            $('cmbCovPerson').select2();
+            LoadComboBoxData();
+        });
+      
+
+
+        //disable covering Person
+        $('#cmbLeaveType').change(function () {
+          
+            var LeaveType = $('#cmbLeaveType').val();
+            if (LeaveType == 1031) {
+
+                $('#cmbCovPerson').prop('disabled', false);
+            }
+            else {
+
+              
+                $('#cmbCovPerson').prop('disabled', true);
+            }
+
+
+
+        });
+
+        function LoadComboBoxData() {
+            $.ajax({
+                type: "POST",
+                url: "/Leave/GetEmployeesDropDown",
+                success: function (Result) {
+                    $("#cmbCovPerson").empty();
+
+                    $("#cmbCovPerson").append($("<option></option>").val("0").html("<--Select Covering Person-->"));
+                    $.each(Result.dataList, function (key, value) {
+                        $("#cmbCovPerson").append($("<option></option>").val(value.EmployeeIds).html(value.Name));
+                    });
+                }
+
+            });
+        }
+        function LoadComboBoxDataintChangeFunction() {
+            var EmpId = $('#cmbLeaveEmployee').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/Leave/GetEmployeesDropDownForChange?EmployeeId=" + EmpId,
+                success: function (Result) {
+                    $("#cmbCovPerson").empty();
+                    $("#cmbCovPerson").append($("<option></option>").val("0").html("<--Select Covering Person-->"));
+                    $.each(Result.dataList, function (key, value) {
+                        $("#cmbCovPerson").append($("<option></option>").val(value.EmployeeIds).html(value.Name));
+                    });
+                }
+
+            });
+        }
+
+        $('#cmbLeaveEmployee').change(function () {
+            LoadComboBoxDataintChangeFunction()
+        });
+
+        //Apply Leave
+        $('#applyLeaveBtn').click(function () {
+
+            var dataRow = {
+                'EmployeeId': $('#cmbLeaveEmployee').val(),
+                'CoveringPerson': $('#cmbCovPerson').find(":selected").val(),
+                'FromDate': $('#single_cal1').val(),
+                'ToDate': $('#single_cal2').val(),
+                'LeaveTypeId': $('#cmbLeaveType').find(":selected").val(),
+                'TotalLeaveQty': $('#txtTotal').val(),
+                'IsHalfDay': $('#cbHalfDay').is(":checked"),
+                'IsWorkflow': $('#cbWorkflow').is(":checked"),
+                'Reason': $('#cmbReason').val(),
+                'DeductOT': $('#numDeductOT').val(),
+                'CreatedUser': $('#UserName').val(),
+                'Session': $('#cmbSession').find(":selected").val()
+            }
+            var conceptName = $('#cmbCovPerson').val();
+            var leaveQty = parseFloat($('#txtTotal').val());
+            var remLeaveQty = parseFloat($('#txtLeaveBalance').val());
+            var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+           
+            $('.custom-loader').show();
+
+            if (leaveQty == 0) {
+                //$.notify("No shift assigned to selected date range.", "error");
+                //$('.custom-loader').hide();
+            }
+            //else if (leaveQty > remLeaveQty && leaveTypeId != 1035 && leaveTypeId != 1041 && leaveTypeId != 1042 && leaveTypeId != 1050 && leaveTypeId != 1051 && leaveTypeId != 1048 && leaveTypeId != 1052 && leaveTypeId != 1054 && leaveTypeId != 1055) {
+            //    $.notify("Leave limit exceeded.", "error");
+            //    $('.custom-loader').hide();
+            //} else if ($('#cmbCovPerson').find(":selected").val() === '0') {
+            //    $.notify("Please select a covering person.", "error");
+            //    $('.custom-loader').hide();
+            //} else if (leaveTypeId == 1056 && leaveQty > 0.5) {
+            //    $.notify("Leave limit exceeded.", "error");
+            //    $('.custom-loader').hide();
+            //} else if (leaveTypeId == 1031 && leaveQty < 2) {
+            //    $.notify("Annual leave days should be more than 2 days.", "error");
+            //    $('.custom-loader').hide();
+            //} else if (leaveTypeId == 1032 && leaveQty > 2) {
+            //    $.notify("Casual leave days should not exceed 2 days.", "error");
+            //    $('.custom-loader').hide();
+            //} else if (leaveTypeId == 1035 && $('#fileUpload').get(0).files.length === 0) {
+            //    $.notify("Medical attachment required.", "error");
+            //    $('.custom-loader').hide();
+            //} 
+            else {
+                $.ajax({
+                    type: 'POST',
+                    url: "/Leave/SaveLeaveDetails",
+                    data: dataRow,
+                    success: function (response) {
+                        if (response.success) {
+                            ClearControls();
+                            $.notify(response.message, "success");
+                            if (leaveTypeId == 1035) {
+                                var fileUpload = $("#fileUpload").get(0);
+                                var files = fileUpload.files;
+
+                                // Create FormData object
+                                var fileData = new FormData();
+                                fileData.append('EmployeeId', $('#cmbLeaveEmployee').val());
+
+                                // Looping over all files and add it to FormData object
+                                for (var i = 0; i < files.length; i++) {
+                                    fileData.append(files[i].name, files[i]);
+                                }
+                                $.ajax({
+                                    type: "Post",
+                                    url: "/Leave/SaveMedicalLeaveAttchement",
+                                    contentType: false, // Not to set any content header
+                                    processData: false, // Not to process data
+                                    data: fileData,
+                                    success: function (result) {
+                                        if (result.success) {
+                                            /*  $.notify(result.message, "success");*/
+                                            //ClearControl();
+                                        }
+                                        else {
+
+                                            $.notify(result.message, "error");
+                                        }
+                                    },
+                                })
+                            }
+                            $('.custom-loader').hide();
+                        }
+                        else {
+                            $.notify(response.message, "error");
+                            $('.custom-loader').hide();
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#resetBtn').click(function () {
+            ClearControls();
+        });
+
+        //Get leave balance
+        $('#cmbLeaveType').change(function () {
+            if ($(this).val() == 1035) {
+                $("#sickLeaveAttachement").show();
+            }
+            else {
+                $("#sickLeaveAttachement").hide();
+            }
+                
+            if ($(this).val() == 1056 || $(this).val() == 1039) {
+                $("#divCbsSub").hide();
+                $("#divSession").show();
+            } else if ($(this).val() == 1048) {
+                $("#divCbsSub").show();
+                $("#divCbHalfDay").hide();
+                $("#divCbFullDay").show();
+                $("#divNumDeductOT").hide();
+                $("#divSession").hide();
+            } else if ($(this).val() == 1050) {
+                $("#divCbsSub").show();
+                $("#divCbHalfDay").show();
+                $("#divCbFullDay").show();
+                $("#divNumDeductOT").show();
+                $("#divSession").hide();
+            } else {
+                $("#divCbsSub").show();
+                $("#divCbHalfDay").show();
+                $("#cbFullDay").prop('checked', true);
+                $("#divCbFullDay").show();
+                $("#divNumDeductOT").hide();
+                $("#divSession").hide();
+            }
+            GetLeaveBalance();
+            GetLeaveQty();
+        });
+
+        $('#cmbLeaveEmployee').change(function () {
+            GetLeaveBalance();
+            GetLeaveQty();
+        });
+
+        function GetLeaveBalance() {
+            var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+            var fromDate = $('#single_cal1').val();
+            var EmployeeId = $('#cmbLeaveEmployee').val();
+            var toDate = $('#single_cal2').val();
+            $.ajax({
+                type: "GET",
+                url: "/Leave/GetLeaveBalance?fromDate=" + fromDate + "&LeaveTypeId=" + leaveTypeId + "&EmployeeId=" + EmployeeId + "&toDate=" + toDate,
+                success: function (response) {
+                    if (response.success) {
+                        $('#txtLeaveBalance').val(response.message);
+                    }
+                    else {
+                        $('#txtLeaveBalance').val('0');
+                    }
+                },
+            });
+        }
+
+        function GetLeaveQty() {
+            var fromDate = $('#single_cal1').val();
+            var toDate = $('#single_cal2').val();
+            var empId = $('#cmbLeaveEmployee').val();
+            var isHalfDay = $('#cbHalfDay').is(":checked");
+            var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+
+            $.ajax({
+                type: "GET",
+                url: "/Leave/GetLeaveQty?EmployeeId=" + empId + "&IsHalfDay=" + isHalfDay + "&FromDate=" + fromDate + "&ToDate=" + toDate + "&LeaveTypeId=" + leaveTypeId,
+                success: function (response) {
+                    if (response.success) {
+                        $('#txtTotal').val(response.message);
+                    }
+                    else {
+                        $('#txtTotal').val('0');
+                    }
+                }
+            });
+        }
+
+        $('#cbFullDay').click(function () {
+            if ($(this).is(':checked')) {
+                $("#cbHalfDay").prop('checked', false);
+                $("#divSession").hide();
+            }
+            else {
+                $("#cbHalfDay").prop('checked', true);
+                $("#divSession").show();
+            }
+            GetLeaveQty();
+        });
+
+        $('#cbHalfDay').click(function () {
+            if ($(this).is(':checked')) {
+                $("#cbFullDay").prop('checked', false);
+                $("#divSession").show();
+            }
+            else {
+                $("#cbFullDay").prop('checked', true);
+                $("#divSession").hide();
+            }
+            GetLeaveQty();
+        });
+
+        $('#single_cal1').change(function () {
+            setTimeout(function () {
+                GetLeaveQty();
+                GetLeaveBalance();
+            }, 650);
+
+            //GetLeaveBalance();
+        })
+
+        $('#single_cal2').change(function () {
+            setTimeout(function () {
+                GetLeaveQty();
+            }, 650);
+        })
+
+
+        function ClearControls() {
+            var date = $('#HfCalendarDate').val();
+            var d = new Date();
+            $('#single_cal1').data('daterangepicker').setStartDate(d);
+            $('#single_cal1').data('daterangepicker').setEndDate(d);
+            $('#single_cal2').data('daterangepicker').setStartDate(d);
+            $('#single_cal2').data('daterangepicker').setEndDate(d);
+
+            $("#cmbLeaveType").prop("selectedIndex", 0);
+            $('#cmbLeaveType').val($("#cmbLeaveType").val());
+            $('#cmbLeaveType').trigger('change');
+            $("#cmbCovPerson").val($("#cmbCovPerson option:first").val());
+            $('#cmbCovPerson').trigger('change');
+            $('#cmbLeaveEmployee').val($('#EmpId').val());
+            $('#cmbLeaveEmployee').trigger('change');
+            $("#cmbHalfShift").val($("#cmbHalfShift option:first").val());
+            $('#cmbHalfShift').trigger('change');
+            $('#cmbReason').val($("#cmbReason option:first").val());
+            $('#cmbReason').trigger('change');
+            $("#cbFullDay").prop('checked', true);
+            $("#cbHalfDay").prop('checked', false);
+        }
+        $("#cmbLeaveEmployee").change(function () {
+            var empId = $('#cmbLeaveEmployee').val();
+            $.ajax({
+                type: "GET",
+                url: "/Leave/GetLeaveEmployeesDropDownchange?EmployeeId=" + empId,
+                success: function (response) {
+                  
+                },
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+}
+
