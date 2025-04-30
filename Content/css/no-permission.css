@@ -1,0 +1,21 @@
+﻿.permission-view-container {
+    display: grid;
+    place-content: center;
+    height: calc(100vh - 100px)
+}
+.g-center {
+    display: grid;
+    place-content: center
+}
+
+
+@media screen and (max-width: 500px) {
+    .permission-img {
+        width:calc(100vw - 30px)!important;
+        height:auto!important;
+    }
+}
+.permission-img {
+    width: auto;
+    height: calc(100vh - 300px)
+}

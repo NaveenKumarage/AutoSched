@@ -1,0 +1,36 @@
+﻿.alert-border-primary {
+    border: 1px solid #b8daff;
+}
+.alert-border-warning {
+    border: 1px solid #ffeeba;
+}
+.alert-border-success {
+    border: 1px solid #c3e6cb;
+}
+.alert-border-danger {
+    border: 1px solid #f5c6cb;
+}
+
+.alert-message-primary {
+    color: #004085;
+}
+
+.alert-message-warning {
+    color: #856404;
+}
+
+.alert-message-success {
+    color: #155724;
+}
+
+.alert-message-danger {
+    color: #721c24;
+}
+
+.alert-close {
+    position: absolute;
+    right: 6px;
+    top: 4px;
+    opacity: 0.5;
+    width: 10px;
+}

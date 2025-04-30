@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\ITPM PROJECT\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\CRUD_OperationByMeUsingJqueryAjaxMvc\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\ITPM PROJECT\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\CRUD_OperationByMeUsingJqueryAjaxMvc\\Email\\Email.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Email\\Email.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Email.cs",
+              "DocumentMoniker": "C:\\ITPM PROJECT\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\CRUD_OperationByMeUsingJqueryAjaxMvc\\Email\\Email.cs",
+              "RelativeDocumentMoniker": "Email\\Email.cs",
+              "ToolTip": "C:\\ITPM PROJECT\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\NAPL_Live -My test EESP-new\\CRUD_OperationByMeUsingJqueryAjaxMvc\\Email\\Email.cs*",
+              "RelativeToolTip": "Email\\Email.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAB3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-23T04:13:18.943Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+﻿/* Remove margin and padding for all elements within the row */
+.row, .col-md-2, .col-sm-6, .col-xs-12,
+.dashboard-tiles, table, tr, td, p, span, img {
+    /*margin: 0 !important;*/
+    /*padding-right: 20px !important;*/
+
+}
+
+ Remove specific padding for table and its child elements 
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+ Optional: if you want to control tile sizes 
+.dashboard-tiles {
+    box-sizing: border-box;
+}

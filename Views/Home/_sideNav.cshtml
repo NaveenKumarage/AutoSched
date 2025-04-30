@@ -1,0 +1,58 @@
+﻿@using CRUD_OperationByMeUsingJqueryAjaxMvc.Models;
+@model dynamic
+
+@{
+    var userId = 0;
+    var isCenter = 0;
+    
+    if (Session["UserId"] != null && Session["UserId"].ToString() != string.Empty)
+    {
+        userId = Convert.ToInt32(Session["UserId"]);
+        isCenter = Convert.ToInt32(Session["CenterStaff"]);
+
+    }
+}
+
+@{
+    var mainMenuList = ((IEnumerable<dynamic>)Model.MainMenus).Where(p => p.UserId == userId);
+}
+@foreach (GetMainMenues_Result mainMenus in mainMenuList)
+{
+
+    var subMenuList = ((IEnumerable<dynamic>)Model.SubMenus).Where(p => p.UserId == userId && p.MainMenuId == mainMenus.MainMenuId);
+    <div class="menu_section">
+        <h3>@mainMenus.MenuName</h3>
+        <ul class="nav side-menu">
+            @*@foreach (var subMenus in subMenuList)
+        {
+            string icon = subMenus.IconClass;
+            var formList = ((IEnumerable<dynamic>)Model.Forms).Where(p => p.UserId == userId && p.MainMenuId == mainMenus.MainMenuId && p.SubMenuId == subMenus.SubMenuId).OrderBy(x => x.VisibleIndex);
+            <li>
+                <a><i class="@subMenus.IconClass"></i> @subMenus.MenuName <span class="fa fa-chevron-left"></span></a>
+                <ul class="nav child_menu">
+                    @foreach (var forms in formList)
+                    {
+                        <li><a href="/@forms.ControllerName/@forms.PageName">@forms.Title</a></li>
+                    }
+                </ul>
+            </li>
+        }*@
+            @foreach (var subMenus in subMenuList.Where(s => !((isCenter == 1) && (s.SubMenuId == 2))))
+            {
+                string icon = subMenus.IconClass;
+                var formList = ((IEnumerable<dynamic>)Model.Forms).Where(p => p.UserId == userId && p.MainMenuId == mainMenus.MainMenuId && p.SubMenuId == subMenus.SubMenuId).OrderBy(x => x.VisibleIndex);
+                <li>
+                    <a><i class="@subMenus.IconClass"></i> @subMenus.MenuName <span class="fa fa-chevron-left"></span></a>
+                    <ul class="nav child_menu">
+                        @foreach (var forms in formList)
+                        {
+                            <li><a href="/@forms.ControllerName/@forms.PageName">@forms.Title</a></li>
+                        }
+                    </ul>
+                </li>
+            }
+
+        </ul>
+    </div>
+}
+

@@ -1,0 +1,188 @@
+﻿@model CRUD_OperationByMeUsingJqueryAjaxMvc.Models.Employee
+@{
+    ViewBag.Title = "Index";
+}
+
+
+
+<div id="refreshPage">
+    <a href="#" class="btn btn-info" style="margin-top:10px;" onclick="AddNewEmployee(0)">Add New Employee</a> <br /><br />
+
+    @*Create a popup modal for Save & Edit a Employee*@
+    <div class="modal fade" id="Mymodal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h4 id="ModalTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form">
+                        <fieldset id="SubmitForm">
+                            @Html.HiddenFor(m => m.EmployeeID, new { @id = "EmpId" })
+                            <div class="row">
+                                <div class="form-group col-sm-6">
+                                    @Html.TextBoxFor(m => m.Name, new { @id = "EmpName", @class = "form-control", @placeholder = "Name*" })
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    @Html.TextBoxFor(m => m.Position, new { @id = "EmpPosition", @class = "form-control", @placeholder = "Position*" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-sm-6">
+                                    @Html.TextBoxFor(m => m.Office, new { @id = "EmpOffice", @class = "form-control", @placeholder = "Office*" })
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    @Html.TextBoxFor(m => m.Salary, new { @id = "EmpSalary", @class = "form-control", @placeholder = "Salary*" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <a href="#" class="btn btn-block btn-danger" id="SaveEmployeeRecord">Save</a>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Create a popup modal for Delete confirmation*@
+    <div class="modal fade" id="DeleteConfirmation">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h4>Delete Employee</h4>
+                </div>
+                <div class="modal-body">
+                    <h4>Are you sure want to delete this record?</h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">Cancel</a>
+                    <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table id="employeeTable" class="table table-bordered table-responsive">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Office</th>
+                <th>Salary</th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var oTable = $('#employeeTable').DataTable({
+                "ajax": {
+                    "url": '/Home/GetEmployees',
+                    "type": "get",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Name", "autoWidth": true },
+                    { "data": "Position", "autoWidth": true },
+                    { "data": "Office", "autoWidth": true },
+                    { "data": "Salary", "autoWidth": true },
+                    {
+                        "data": "EmployeeID", "Width": "50px", "render": function (data) {
+                            return '<a class="btn btn-primary btn-sm" onclick="EditEmployeeRecord(' + data + ')"><span class="glyphicon glyphicon-edit"></span></a>' +
+                                '<a class="btn btn-danger btn-sm" style="margin-left:3px" onclick="DeleteEmployeeRecord(' + data + ')"><span class="glyphicon glyphicon-trash"></span></a>';
+
+                        }
+                    }
+                ]
+            })
+        })
+    </script>
+
+    <script>
+        //Show the popup modal for Add new Employee
+        function AddNewEmployee(EmployeeId) {
+            $("#form")[0].reset();
+            $("#EmpId").val(0);
+            $("#ModalTitle").html("Add New Employee");
+            $("#Mymodal").modal();
+        }
+
+        //Show the popup modal for Edit a Employee
+        function EditEmployeeRecord(EmployeeId) {
+            var url = "/Home/GetEmployeeById?EmployeeId=" + EmployeeId;
+            $("#ModalTitle").html("Edit Student");
+            $("#Mymodal").modal();
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    $("#EmpId").val(obj.EmployeeID);
+                    $("#EmpName").val(obj.Name);
+                    $("#EmpPosition").val(obj.Position);
+                    $("#EmpOffice").val(obj.Office);
+                    $("#EmpSalary").val(obj.Salary);
+                    //$("#DropDwn option:selected").text(obj.tblDepartment.DepartmentName);
+                }
+            })
+        }
+
+        //Show the popup modal for Delete a Employee
+        function DeleteEmployeeRecord(EmployeeId) {
+            $("#EmpId").val(EmployeeId);
+            $("#DeleteConfirmation").modal("show");
+        }
+
+        //Delete Employee
+        function ConfirmDelete() {
+            var EmpId = $("#EmpId").val();
+            $.ajax({
+                type: "Post",
+                url: "/Home/DeleteEmployee?EmployeeId=" + EmpId,
+                success: function (result) {
+                    $('#employeeTable').DataTable().ajax.reload();
+                    $("#DeleteConfirmation").modal("hide");
+                    if (result.success) {
+                        $.notify(result.message, "success");
+                    }
+                    else {
+                        $.notify(result.message, "error");
+                    }
+                }
+
+            })
+        }
+
+        //Save & Edit Employee
+        $("#SaveEmployeeRecord").click(function () {
+            var data = $("#SubmitForm").serialize();
+            $.ajax({
+                type: "Post",
+                url: "/Home/SaveDataInDatabase",
+                data: data,
+                success: function (result) {
+                    $('#employeeTable').DataTable().ajax.reload();
+                    $("#Mymodal").modal("hide");
+                    if (result.success) {
+                        $.notify(result.message, "success");
+                    }
+                    else {
+                        $.notify(result.message, "error");
+                    }
+
+                }
+            })
+        })
+    </script>
+}
+

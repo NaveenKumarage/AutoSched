@@ -1,0 +1,37 @@
+@media screen and (max-width: 500px) {
+    .fc td {
+        /* width:50px; */
+        width: 30vw;
+        /* height: 12vw; */
+    }
+    .fc-basic-view {
+        /* height: 56px; */
+        /* height: 12vw; */
+    }
+    .fc-head {
+        display: none;
+    }
+    .fc-day-grid {
+        display: block;
+        overflow-x: scroll;
+    }
+    .fc-day-grid-container {
+        height: auto!important;
+    }
+    .fc-basic-view .fc-body .fc-row {
+        min-height: 6em;
+    }
+    /* .fc-day-number{ */
+    /* display: grid; */
+    /* place-content: center; */
+    /* height: fit-content; */
+    /* font-size: 2rem; */
+    /* width: inherit; */
+    /* } */
+    .fc-widget-content {
+        /* min-height: 68px; */
+    }
+    .x_panel {
+        min-height: 190px!important;
+    }
+}

@@ -1,0 +1,1031 @@
+﻿@using CRUD_OperationByMeUsingJqueryAjaxMvc.Models;
+@model dynamic
+@if (Session["UserName"] == null || Session["CompanyId"] == null || Session["UserId"] == null)
+{
+    @Html.Action("Login", "Login");
+    Layout = null;
+}
+else
+{
+    @Html.Action("CheckIsFirstAttempt", "Login");
+    @Html.Action("CheckPermission", "UserSecurity", new { PageName = "DashBoard", EmployeeId = Convert.ToInt64(Session["EmployeeId"]) });
+    ViewBag.Title = "Dashboard";
+
+    <link href="~/Content/vendors/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet">
+    <link href="~/Content/vendors/fullcalendar/dist/fullcalendar.print.css" rel="stylesheet" media="print">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="~/Content/css/updated-calender.css" rel="stylesheet">
+    <link href="~/Content/css/CustomCSS/dashboard.css" rel="stylesheet" />
+
+    <style>
+        .select2 {
+            width: 100% !important;
+        }
+        .dashboard-tiles.main-tile-5 {
+            background-color:lightseagreen;
+        }   
+        .dashboard-tiles.main-tile-6 {
+            background-color: seagreen;
+        }
+    </style>
+
+    <style>
+
+        .aa {
+            font-size: smaller
+        }
+    </style>
+
+
+    <input type="hidden" id="EmpId" value="@Session["EmployeeId"]" />
+    <input type="hidden" id="UserTypeId" value="@Session["UserTypeId"]" />
+    <input type="hidden" id="CompanyId" value="@Session["CompanyId"]" />
+    <input type="hidden" id="UserName" value="@Session["UserName"]" />
+    <input type="hidden" id="HfCalendarDate" />
+    <h2 class="mobile-show pt-2 pb-2">Dashboard</h2>
+
+    <div class="row">
+        @*<div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-1">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>
+                                    <img src="~/Content/images/annual_leave_icon.png">
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="SpanAnnualBal"></p>
+                                <p class="info-box-text">Annual </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>*@
+            <!-- /.info-box -->
+        <!--</div>-->
+        <!-- /.col -->
+    @*    <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-2">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>*@
+                                    @*<img src="~/Content/images/casual_icon.png">*@
+                        @*            <img src="~/Content/images/notification/family.png" />
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="SpanCasualBal"></p>
+                                <p class="info-box-text">FR Leave </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>*@
+            <!-- /.info-box -->
+ @*       </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-5">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>*@
+                                    @*<img src="~/Content/images/medi.png">*@
+                @*                    <img src="~/Content/images/notification/medical.png" />
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="Spanmedibal"></p>*@
+        @*<p class="info-box-text">ML with MC</p>*@
+        @*                        <p class="info-box-text">Medical <br> with MC</p>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>*@
+        @*<div class="col-md-2 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-6">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>
+                                    <img src="~/Content/images/exit.png">
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="SpanTotal"></p>
+                                <p class="info-box-text">Total Leaves</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>*@
+        <!-- /.col -->
+        <!--<div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-1">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>-->
+                                    @*<img src="~/Content/images/absense_icon.png">*@
+                                    <!--<img src="~/Content/images/notification/medica-01.png" />
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="SpanAbsentDays"></p>-->
+                                @*<p class="info-box-text">M without MC</p>*@
+                                <!--<p class="info-box-text">Medical <br> without MC</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>-->
+            <!-- /.info-box -->
+        <!--</div>-->
+        <!-- /.col -->
+        @*<div class="col-md-2 col-sm-6 col-xs-12">
+            <div class="dashboard-tiles main-tile-4">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>
+                                    <img src="~/Content/images/late_hours_icon_2.png">
+                                </span>
+                            </td>
+                            <td>
+                                <p class="info-box-number" id="SpanLateHrs"></p>
+                                <p class="info-box-text">Late Hrs</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>*@
+        <!-- /.col -->
+
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-8 col-md-12 col-sm-12">
+            <div class="x_panel dash-Calendar">
+                <div class="x_title">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <h2>Exam & Presentation -</h2>
+                        </div>
+                        <div class="col-sm-4 text-right mobile-hide">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">
+                                    Color Codes
+                                </button>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item-custom orange"><i class="fa fa-square orange mr-2"></i>Pending</div>
+                                    <div class="dropdown-item-custom green"><i class="fa fa-square green mr-2"></i>Approved</div>
+                                    <div class="dropdown-item-custom red"><i class="fa fa-square red mr-2"></i>Rejected</div>
+                                    @*<div class="dropdown-item-custom aero"><i class="fa fa-square aero mr-2"></i>Something</div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="x_content">
+                    <div id='LeaveCalendar'></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-sm-12">
+            <div class="info-box">
+                <ul id="WeeklyAttList" class="list-group list-group-flush">
+                    <li class="list-group-item" style="font-weight:bold"><h2>Scheduled Dates</h2></li>
+                    @*<li class="list-group-item d-flex justify-content-between align-items-center pr-0 pl-0">
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="wr-week-first">
+                                        Dec
+                                        <span>4</span>
+                                    </div>
+                                </div>
+                                <div class="col-4 pl-0">
+                                    <div class="wr-week-second">
+                                        Monday
+                                        <span>Work Day</span>
+                                    </div>
+                                </div>
+                                <div class="col-5 text-right">
+                                    <div class="wr-week-third">
+                                        09.25 <span> Hours Worked</span>
+                                        <div class="week-progress text-left">
+                                            <div class="week-progress-bar" style="width: 78%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>*@
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- calendar modal -->
+    <div class="modal fade" id="CalenderModalNew" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exam And Presentation Application</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <label for="cmbLeaveType">Lecturer Name<span class="red">*</span></label>
+                            <input type="text" class="form-control" id="txtTotal" placeholder="Lecturer Name">
+                            @*     <select class="select form-control" id="cmbLeaveEmployee">
+            @foreach (Employee levEmployees in Model.LeaveEmployees)
+            {
+                <option value="@levEmployees.EmployeeId">@levEmployees.EmployeeCode/@levEmployees.FirstName @levEmployees.LastName</option>
+            }
+        </select>*@
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <table width="100%;" class="apple-leave-table">
+                                <tr>
+                                    <td>
+                                        <label for="cmbLeaveType">Exam Type <span class="red">*</span></label>
+                                        <select class="select form-control" id="cmbLeaveType" name="ExamType">
+                                            <option value="Quiz">Quiz</option>
+                                            <option value="Practical Exam">Practical Exam</option>
+                                            <option value="SpotTest">Spot Test</option>
+                                            <option value="Mid Exam">Mid Exam</option>
+                                            <option value="Final Exam">Final Exam</option>
+                                        </select>
+                                    </td>
+                                    @*<td>
+                            <div class="">
+                                <label for="txtLeaveBalance">Available</label>
+                                <input type="text" class="form-control" id="txtLeaveBalance" readonly>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                        </td>*@
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <table width="100%;" class="apple-leave-table">
+                                <tr>
+                                    <td>
+                                        <label for="single_cal1">Exam Date <span class="red">*</span></label>
+                                        <div class="input-group mb-0">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control" id="single_cal1" placeholder="Username" aria-describedby="inputGroupPrepend inputSuccess2Status4" required>
+                                            <span id="inputSuccess2Status4" class="sr-only">(success)</span>
+                                            <div class="invalid-feedback">
+                                                Please choose a username.
+                                            </div>
+                                        </div>
+                                    </td>
+                                    @* <td>
+                            <label for="single_cal2">To Date <span class="red">*</span></label>
+                            <div class="input-group mb-0">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-calendar-o"></i></span>
+                                </div>
+                                <input type="text" class="form-control" id="single_cal2" aria-describedby="inputGroupPrepend inputSuccess2Status4" required>
+                                <span id="inputSuccess2Status4" class="sr-only">(success)</span>
+                                <div class="invalid-feedback">
+                                    Please choose a username.
+                                </div>
+                            </div>
+                        </td>*@
+                                    <td>
+                                        <div class="">
+                                            <label for="validationCustom02">Exam Hours</label>
+                                            <input type="number" class="form-control" id="txtTotal" placeholder="Exam Hours">
+                                            <div class="valid-feedback">
+                                                Looks good!
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    @* <div class="form-row" id="divCbs">
+            <div class="col-md-6 mb-3" id="divCbsSub">
+                <div class="form-check form-check-inline" id="divCbFullDay">
+                    <input class="form-check-input" type="checkbox" id="cbFullDay" value="option1">
+                    <label class="form-check-label" for="cbFullDay">Full Day</label>
+                </div>
+                <div class="form-check form-check-inline" id="divCbHalfDay">
+                    <input class="form-check-input" type="checkbox" id="cbHalfDay" value="option2">
+                    <label class="form-check-label" id="cbHalfDayLabel" for="cbHalfDay">Half Day</label>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3" id="divSession" style="display:none">
+                <label for="cmbSession">Session<span class="red">*</span></label>
+                <select class="select form-control" id="cmbSession">
+                    <option value="FirstHalf">First Half</option>
+                    <option value="SecondHalf">Second Half</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3" id="divNumDeductOT" style="display:none">
+                <label for="cmbHalfShift">Deduct OT<span class="red">*</span></label>
+                <input type="number" class="form-control" id="numDeductOT" placeholder="Deduct OT" value="0" required>
+            </div>
+        </div>*@
+                    <div class="">
+                        <label for="validationCustom02">Covering Students<span class="red">*</span></label>
+                        <input type="text" class="form-control" id="txtTotal" placeholder="Covering Students">
+                    </div>
+                    @*<div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <label for="cmbCovPerson">Covering Students <span class="red">*</span></label>
+                            <select class="select form-control" id="cmbCovPerson"></select>
+                        </div>
+                    </div>*@
+                    <div class="form-row">
+                        <div class="col-md-12 mb-3">
+                            <label for="cmbReason">Notes<span class="red">*</span></label>
+                            <input type="text" class="form-control" id="txtTotal" placeholder="Notes">
+                            @*<select class="select form-control" id="cmbReason">
+            @foreach (Lev_LeaveReason levReason in Model.LeaveReasons)
+            {
+                <option value="@levReason.LeaveReasonId">@levReason.LeaveDescription</option>
+            }
+        </select>*@
+                        </div>
+                    </div>
+                    <div class="form-row" id="sickLeaveAttachement" style="display:none">
+                        <div class="col-md-6 mb-3">
+                            <label for="cmbReason">Choose File<span class="red">*</span></label>
+                            <input type="file" accept="application/PNG,application/pdf,application/jpg" class="form-control" name="fileUpload" id="fileUpload" size="1" />
+                        </div>
+                    </div>
+                    @*<div class="form-row">
+            <div class="col-md-6 mb-3">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input iCheck" type="checkbox" id="cbWorkflow" value="option1">
+                    <label class="form-check-label " for="cbWorkflow">Workflow</label>
+                </div>
+            </div>
+        </div>*@
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-secondary" id="resetBtn">Reset</a>
+                    <button class="btn btn-primary" type="button" id="applyLeaveBtn">Apply Now</button>
+                </div>
+            </div>
+            <div class="custom-loader" style="display:none;">
+                <div class="loader-leave">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    //<div id="fc_create" data-toggle="modal" data-target="#CalenderModalNew"></div>
+
+
+    @section Scripts
+{
+        <script>
+            $(document).ready(function () {
+            
+                $("#divNumDeductOT").hide();
+                
+                //$('.leave-reason').select2();
+                $('.select').select2({
+                    dropdownParent: $('#CalenderModalNew')
+                });
+
+                GetHeadersData();
+
+                //function LoadComboBoxData() {
+                //    $.ajax({
+                //        type: "POST",
+                //        url: "/Dashboard/GetEmployees",
+                //        success: function (Result) {
+                //            $("#cmbLeaveEmployee").empty();
+                //            $.each(Result.dataList, function (key, value) {
+                //                $("#cmbLeaveEmployee").append($("<option></option>").val(value.EmployeeId).html(value.Name));
+                //            });
+                //        },
+                //        error: function () {
+                //            alert("Nothing");
+                //        }
+
+                //    });
+                //}
+               
+              
+                $("#cmbLeaveEmployee").val($("#cmbLeaveEmployee option:first").val());
+                $('#cmbLeaveEmployee').trigger('change');
+                /* CALENDAR */
+                if (typeof ($.fn.fullCalendar) === 'undefined') { return; }
+                console.log('init_calendar');
+
+                setTimeout(() => {
+                    var dayContainer = document.getElementsByClassName("fc-day-grid")[0];
+                    var todayElement = document.getElementsByClassName("fc-today")[0];
+                    console.log(todayElement);
+                    dayContainer.scrollTo({
+                        left: todayElement.getBoundingClientRect().left - (window.innerWidth / 3),
+                        behavior: 'smooth'
+                    });
+                }, 0);
+              
+                var date = new Date(),
+                    d = date.getDate(),
+                    m = date.getMonth(),
+                    y = date.getFullYear(),
+                    started,
+                    categoryClass;
+
+                var calendar = $('#LeaveCalendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        //right: 'month,agendaWeek,agendaDay,listMonth'
+                        right: 'none'
+                    },
+                    dayRender: function (date, cell, event) {
+                        var data = JSON.stringify({
+                            'StartDate': date,
+                            'CompanyId': $("#CompanyId").val()
+                        })
+                      
+                        $(function () {
+                            
+                            $.ajax({
+                                type: "POST",
+                                url: "/Dashboard/GetCalenderDayTitle/",
+                                data: data,
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                async: false,
+                                success: function (result) {
+                                    if (result.dataList.length > 0) {
+                                        var dayType = result.dataList[0].Title;
+                                        var backColor = result.dataList[0].Color;
+                                        cell.append('<div class="unavailable" style="opacity:1 !important;z-index:100;font-size:Small; padding: 3px; font-weight: bold; color:' + backColor + '">' + dayType + '</div>');
+                                        //cell.css("background-color", backColor);
+                                    }
+                                    else {
+                                        cell.append('<div class="unavailable"></div>');
+                                    }
+                                }
+
+                            });
+                        });
+                    },
+                    selectable: true,
+                    selectHelper: true,
+                    select: function (start, end, allDay) {
+                       
+                        $('#fc_create').click();
+
+                        $("#cbFullDay").prop('checked', true);
+
+                        started = start;
+                        ended = end;
+
+                        $('#HfCalendarDate').val(start);
+                        ClearControls();
+                        GetLeaveBalance();
+                        GetLeaveQty();
+
+                        
+                        var userTypeId = $('#UserTypeId').val();
+                        
+                        
+                        if (userTypeId != 1) {
+                            $("#cbWorkflow").prop('disabled', false);
+                            $("#cbWorkflow").prop('checked', true);
+                            $('#cmbLeaveEmployee').prop('disabled', false);
+                            $('#CalenderModalNew').prop('disabled', true);
+                        }
+                        else {
+                            $("#cbWorkflow").prop('disabled', true);
+                            $("#cbWorkflow").prop('checked', true);
+                            $('#cmbLeaveEmployee').removeClass('custom-dropdownSearch').addClass('form-control');
+                            $('#cmbLeaveEmployee').prop('disabled', true);
+                            $('#CalenderModalNew').prop('disabled', false);
+                         
+                        }
+                        
+
+                        //var EmpId = $('#cmbLeaveEmployee').find('option:selected').val();
+                        //alert(EmpName);
+                        //$('#cmbLeaveEmployee').text(EmpName);
+
+                        //setDrop();
+                        //ClearControls();
+
+                        $(".antosubmit").on("click", function () {
+                            var title = $("#title").val();
+                            if (end) {
+                                ended = end;
+                            }
+
+                            categoryClass = $("#event_type").val();
+
+                            if (title) {
+                                calendar.fullCalendar('renderEvent', {
+                                    title: title,
+                                    start: started,
+                                    end: end,
+                                    allDay: allDay
+                                },
+                                    true // make the event "stick"
+                                );
+                            }
+
+                            $('#title').val('');
+
+                            calendar.fullCalendar('unselect');
+
+                            $('.antoclose').click();
+
+                            return false;
+                        });
+
+                        //Custom Dropdown with Search Load
+                        if (!$('.custom-dropdownSearch').hasClass('custom-dropdownSearch-active')) {
+                            customDropdownSearch();
+                        }
+                        $('.custom-dropdownSearch').addClass('custom-dropdownSearch-active');
+
+
+                    },
+                    eventClick: function (calEvent, jsEvent, view) {
+                        //alert('event');
+                        $('#fc_edit').click();
+                        $('#title2').val(calEvent.title);
+
+                        categoryClass = $("#event_type").val();
+
+                        $(".antosubmit2").on("click", function () {
+                            calEvent.title = $("#title2").val();
+
+                            calendar.fullCalendar('updateEvent', calEvent);
+                            $('.antoclose2').click();
+                        });
+
+                        calendar.fullCalendar('unselect');
+                    },
+                    editable: true,
+                    events: "/Dashboard/GetEvents/",
+                    eventColor: '#00c0ef',
+                    eventRender: function (event, element) {
+
+                        if (event.status === 'Pending') {
+                            element.css({
+                                'background-color': '#F39C12',
+                                'border-color': '#F39C12'
+                            });
+                        } else if (event.status === 'Approved') {
+                            element.css({
+                                'background-color': '#1ABB9C',
+                                'border-color': '#1ABB9C'
+                            });
+                        } else if (event.status === 'Rejected') {
+                            element.css({
+                                'background-color': '#E74C3C',
+                                'border-color': '#E74C3C'
+                            });
+                        }
+                    },
+                    longPressDelay: 100,
+                    selectLongPressDelay: 100,
+                });
+
+                $('cmbCovPerson').select2();
+                /*LoadComboBoxData();*/
+            });
+
+            function updateCoveringPersonDropdown() {
+                var fromDate = $("#single_cal1").val();
+                var toDate = $("#single_cal2").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Leave/GetLeaveCoveringPersonDropDown",
+                    data: {
+                        fromDate: fromDate,
+                        toDate: toDate
+                    },
+                    success: function (result) {
+                        // Assuming result.dataList is an array of objects with EmployeeId and Name properties
+                        var cmbCovPerson = $("#cmbCovPerson");
+                        cmbCovPerson.empty();
+                        cmbCovPerson.append($("<option></option>").val("0").html("<--Select Covering Person-->"));
+                        $.each(result.dataList, function (index, item) {
+                            cmbCovPerson.append($("<option></option>").val(item.EmployeeIds).html(item.Name));
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            // Attach the updateCoveringPersonDropdown function to date inputs' change event
+            $("#single_cal1, #single_cal2").on("change", function () {
+                updateCoveringPersonDropdown();
+            });
+
+            function LoadComboBoxDataintChangeFunction() {
+                var EmpId = $('#cmbLeaveEmployee').val()
+
+                $.ajax({
+                    type: "POST",
+                    url:"/Leave/GetLeaveCoveringPersonDropDown",
+                    success: function (Result) {
+                        $("#cmbCovPerson").empty();
+                        $("#cmbCovPerson").append($("<option></option>").val("0").html("<--Select Covering Person-->"));
+                        $.each(Result.dataList, function (key, value) {
+                            $("#cmbCovPerson").append($("<option></option>").val(value.EmployeeIds).html(value.Name));
+                        });
+                    }
+
+                });
+            }
+
+            $('#cmbLeaveEmployee').change(function () {
+                LoadComboBoxDataintChangeFunction()
+            });
+
+            //Set Data to Weekly Attendance List
+            $.get("/Dashboard/GetWeeklyAttendance?EmployeeId=" + $('#EmpId').val(), null, DataB);
+            function DataB(AttList) {
+                var SetData = $("#WeeklyAttList");
+                for (var i = 0; i < AttList.length; i++) {
+
+                    var Data = "<li class='list-group-item d-flex justify-content-between align-items-center pr-0 pl-0'>" +
+                        "<div class='row'><div class='col-3'><div class='wr-week-first'>" + AttList[i].MonthName + "<span>" + AttList[i].Day + "</span></div></div><div class='col-4 pl-0'><div class='wr-week-second'>" + AttList[i].DayName + "<span>Work Day</span></div></div><div class='col-5 pr-0 text-right'><div class='wr-week-third'>" + AttList[i].WorkingHrs + " <span> Hours Worked</span><div class='week-progress text-left'><div class='week-progress-bar' style='width: " + AttList[i].WhProgress + "%'></div></div></div></div></div>" +
+                        "</li>";
+
+                    SetData.append(Data);
+                }
+            }
+
+            //Set data to headers
+            function GetHeadersData() {
+                $.ajax({
+                    type: "GET",
+                    url: "/Dashboard/GetHeadersData",
+                    success: function (response) {
+                        if (response.success) {
+                            $('#SpanAnnualBal').text(response.anualBalance);
+                            $('#SpanCasualBal').text(response.casualBalance); 
+                            $('#SpanAbsentDays').text(response.absentDays);
+                            $('#SpanLateHrs').text(response.lateHrs);
+                            $('#Spanmedibal').text(response.Medicalbalance);
+                            //$('#SpanTotal').text(response.Totalbalance);
+                            //alert(1);
+                        }
+                        else {
+                            //alert(2);
+                        }
+                    }
+                });
+            }
+
+            //Apply Leave
+            $('#applyLeaveBtn').click(function () {
+                var dataRow = {
+                    'EmployeeId': $('#cmbLeaveEmployee').val(),
+                    'CoveringPerson': $('#cmbCovPerson').find(":selected").val(),
+                    'FromDate': $('#single_cal1').val(),
+                    'ToDate': $('#single_cal2').val(),
+                    'LeaveTypeId': $('#cmbLeaveType').find(":selected").val(),
+                    'TotalLeaveQty': $('#txtTotal').val(),
+                    'IsHalfDay': $('#cbHalfDay').is(":checked"),
+                    'IsWorkflow': $('#cbWorkflow').is(":checked"),
+                    'Reason': $('#cmbReason').val(),
+                    'DeductOT': $('#numDeductOT').val(),
+                    'CreatedUser': $('#UserName').val()
+                }
+                
+                var leaveQty = parseFloat($('#txtTotal').val());
+                var remLeaveQty = parseFloat($('#txtLeaveBalance').val());
+                var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+
+                //alert('Here we need a ajax loader');
+                $('.custom-loader').show();
+
+                if (leaveQty == 0) {
+                    //$.notify("No shift assigned to selected date range.", "error");
+                    //$('.custom-loader').hide();
+                } else if (leaveQty > remLeaveQty && leaveTypeId != 1035 && leaveTypeId != 1041 && leaveTypeId != 1042 && leaveTypeId != 1050 && leaveTypeId != 1051) {
+                    $.notify("Leave limit exceeded.", "error");
+                    $('.custom-loader').hide();
+                }
+                //else if ($('#cmbCovPerson').find(":selected").val() === '0') {
+                //    $.notify("Please select a covering person.", "error");
+                //    $('.custom-loader').hide();
+                //}
+                else if (leaveTypeId == 1056 && leaveQty > 0.5) {
+                    $.notify("Leave limit exceeded.", "error");
+                    $('.custom-loader').hide();
+                }
+           
+                //} else if (leaveTypeId == 1032 && leaveQty > 2) {
+                //    $.notify("Casual leave days should not exceed 2 days.", "error");
+                //    $('.custom-loader').hide();
+                //} else if (leaveTypeId == 1035 && $('#fileUpload').get(0).files.length === 0) {
+                //    $.notify("Medical attachment required.", "error");
+                //    $('.custom-loader').hide();
+                //}
+                else {
+                    //Actually ajax loader need here when start the ajax request
+                    $.ajax({
+                        type: 'POST',
+                        url: "/Leave/SaveLeaveDetails",
+                        data: dataRow,
+                        success: function (response) {
+                            $("#CalenderModalNew").modal("hide");
+                            if (response.success) {
+                                $('#LeaveCalendar').fullCalendar('refetchEvents');
+                                GetHeadersData();
+                                $.notify(response.message, "success");
+                                if (leaveTypeId == 1035) {
+                                    var fileUpload = $("#fileUpload").get(0);
+                                    var files = fileUpload.files;
+
+                                    // Create FormData object
+                                    var fileData = new FormData();
+                                    fileData.append('EmployeeId', $('#cmbLeaveEmployee').val());
+
+                                    // Looping over all files and add it to FormData object
+                                    for (var i = 0; i < files.length; i++) {
+                                        fileData.append(files[i].name, files[i]);
+                                    }
+                                    $.ajax({
+                                        type: "Post",
+                                        url: "/Leave/SaveMedicalLeaveAttchement",
+                                        contentType: false, // Not to set any content header
+                                        processData: false, // Not to process data
+                                        data: fileData,
+                                        success: function (result) {
+                                            if (result.success) {
+                                                /*  $.notify(result.message, "success");*/
+                                                //ClearControl();
+                                            }
+                                            else {
+
+                                                $.notify(result.message, "error");
+                                            }
+                                        },
+                                    })
+                                }
+                                
+                                $('.custom-loader').hide();
+                            }
+                            else {
+                                $('#LeaveCalendar').fullCalendar('refetchEvents');
+                                $.notify(response.message, "error");
+                                $('.custom-loader').hide();
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('#resetBtn').click(function () {
+                ClearControls();
+            });
+
+            //Get leave balance
+            $('#cmbLeaveType').change(function () {
+                if ($(this).val() == 1035) {
+                    $("#sickLeaveAttachement").show();
+                }
+                else {
+                    $("#sickLeaveAttachement").hide();
+                }
+                if ($(this).val() == 1039) {
+                    $("#cbHalfDayLabel").text("Half Day");
+                    $("#divCbsSub").show();
+                    $("#divCbHalfDay").prop('checked', false);
+                    $("#divCbFullDay").show();
+                    $("#divNumDeductOT").hide();
+                    $("#divSession").hide();
+                } else if ($(this).val() == 1048) {
+                    $("#cbHalfDayLabel").text("Half Day");
+                    $("#divCbsSub").show();
+                    $("#divCbHalfDay").hide();
+                    $("#divCbFullDay").show();
+                    $("#divNumDeductOT").hide();
+                    $("#divSession").hide();
+                } else if ($(this).val() == 1050) {
+                    $("#cbHalfDayLabel").text("Half Day");
+                    $("#divCbsSub").show();
+                    $("#divCbHalfDay").show();
+                    $("#divCbFullDay").show();
+                    $("#divNumDeductOT").show();
+                    $("#divSession").hide();
+                } else if ($(this).val() == 1055) { 
+                    $("#cbHalfDay").prop('checked', true);
+                    $("#divSession").show();
+                    $("#cbHalfDayLabel").text("Short Leave");
+                    $("#divCbFullDay").hide();
+                }
+                else {
+                    $("#cbHalfDayLabel").text("Half Day");
+                    $("#divCbsSub").show();
+                    $("#divCbHalfDay").show();
+                    $("#cbFullDay").prop('checked', true);
+                    $("#divCbFullDay").show();
+                    $("#divNumDeductOT").hide();
+                    $("#divSession").hide();
+                }
+                GetLeaveBalance();
+                GetLeaveQty();
+            });
+
+            $('#cmbLeaveEmployee').change(function () {
+                GetLeaveBalance();
+                GetLeaveQty();
+            });
+
+            function GetLeaveBalance() {
+                var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+                var fromDate = $('#single_cal1').val();
+                var toDate = $('#single_cal2').val();
+                var EmployeeId = $('#cmbLeaveEmployee').val();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/Leave/GetLeaveBalance?fromDate=" + fromDate + "&LeaveTypeId=" + leaveTypeId + "&EmployeeId=" + EmployeeId + "&toDate=" + toDate,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#txtLeaveBalance').val(response.message);
+                        }
+                        else {
+                            $('#txtLeaveBalance').val('0');
+                        }
+                    },
+                });
+            }
+
+            function GetLeaveQty() {
+                //alert(ChangedDate);
+                var fromDate = $('#single_cal1').val();
+                var toDate = $('#single_cal2').val();
+                var empId = $('#cmbLeaveEmployee').val();
+                var isHalfDay = $('#cbHalfDay').is(":checked");
+                var leaveTypeId = $('#cmbLeaveType').find(":selected").val();
+
+                $.ajax({
+                    type: "GET",
+                    url: "/Leave/GetLeaveQty?EmployeeId=" + empId + "&IsHalfDay=" + isHalfDay + "&FromDate=" + fromDate + "&ToDate=" + toDate + "&LeaveTypeId=" + leaveTypeId,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#txtTotal').val(response.message);
+                        }
+                        else {
+                            $('#txtTotal').val('0');
+                        }
+                    }
+                });
+            }
+
+            $('#cbFullDay').click(function () {
+                if ($(this).is(':checked')) {
+                    $("#cbHalfDay").prop('checked', false);
+                    $("#divSession").hide();
+                }
+                else {
+                    $("#cbHalfDay").prop('checked', true);
+                    $("#divSession").show();
+                }
+                GetLeaveQty();
+            });
+
+            $('#cbHalfDay').click(function () {
+                if ($(this).is(':checked')) {
+                    $("#cbFullDay").prop('checked', false);
+                    $("#divSession").show();
+                }
+                else {
+                    $("#cbFullDay").prop('checked', true);
+                    $("#divSession").hide();
+                }
+                GetLeaveQty();
+            });
+
+            $('#single_cal1').change(function () {
+                setTimeout(function () {
+                    GetLeaveQty();
+                    GetLeaveBalance();
+                }, 650);
+
+                //GetLeaveBalance();
+            })
+
+            $('#single_cal2').change(function () {
+                setTimeout(function () {
+                    GetLeaveQty();
+                }, 650);
+            })
+
+            function ClearControls() {
+                var date = $('#HfCalendarDate').val();
+                var d = new Date(date);
+                $('#single_cal1').data('daterangepicker').setStartDate(d);
+                $('#single_cal1').data('daterangepicker').setEndDate(d);
+                $('#single_cal2').data('daterangepicker').setStartDate(d);
+                $('#single_cal2').data('daterangepicker').setEndDate(d);
+                $("#cmbLeaveType").val($("#cmbLeaveType option:first").val());
+                $('#cmbLeaveType').trigger('change');
+                $("#cmbCovPerson").val($("#cmbCovPerson option:first").val());
+                $('#cmbCovPerson').trigger('change');
+                $("#cmbLeaveEmployee").val($('#EmpId').val());
+                $('#cmbLeaveEmployee').trigger('change');
+                $('#cmbReason').val($("#cmbReason option:first").val());
+                $('#cmbReason').trigger('change');
+                $("#cbFullDay").prop('checked', true);
+                $("#cbHalfDay").prop('checked', false);
+
+                console.log($("#EmpId").val());
+                console.log($("#cmbLeaveEmployee").val());
+            }
+
+         
+
+            function LoadNotificationList() {
+
+                $.ajax({
+                    type: "Post",
+                    url: "/Home/GetNotifications?EmployeeId=" + $('#EmpId').val(),
+                    //data: { "EmployeeId": $('#EmpId').val() },
+                    success: function (result) {
+                        if (result.success) {
+                            $('#notList').empty();
+                            $('#spanCount').text(result.count);
+                            $.each(result.dataList, function (key, value) {
+                                //alert(value[0].PaperName);
+                                var SetData = $("#notList");
+
+
+                                //var Data = `<li class="nav-item">
+                                //                <a href="/${value.ControllerName}/${value.FunctionName}" class="dropdown-item">
+                                //                       <span class="message">${ value.Content}</span>
+                                //                 </a>
+                                //             </li>`
+
+                                var Data = `
+         <li class="nav-item">
+          <div class="d-flex">
+            <div>
+              <img src="" alt="" srcset="">
+            </div>
+            <div>
+              <a href="/${value.ControllerName}/${value.FunctionName}" class="dropdown-item">
+                <span class="message">${ value.Content}</span>
+              </a>
+              <p>sfsfsd</p>
+            </div>
+          </div>
+</li>
+
+                                                    `
+
+                                SetData.append(Data);
+                            });
+                        }
+                    }
+
+                })
+            }
+        </script>
+
+        <script src="~/Content/vendors/fullcalendar/dist/fullcalendar.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="~/SiteJs/load-notification-list.js"></script>
+
+    }
+
+}
+

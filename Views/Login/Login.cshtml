@@ -1,0 +1,159 @@
+﻿@model CRUD_OperationByMeUsingJqueryAjaxMvc.Models.POR_User
+
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+@if (Session["UserName"] != null)
+{
+    @Html.Action("DashBoard", "Home");
+}
+else
+{
+    <html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Meta, title, CSS, favicons, etc. -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="~/Content/images/favicon.ico" type="image/ico" />
+      @*  <title>InfoX | ESSP </title>*@
+        <!-- Bootstrap -->
+        <link href="~/Content/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome -->
+        <link href="~/Content/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <!-- NProgress -->
+        <link href="~/Content/vendors/nprogress/nprogress.css" rel="stylesheet">
+        <!-- Animate.css -->
+        <link href="~/Content/vendors/animate.css/animate.min.css" rel="stylesheet">
+        <!-- Custom Theme Style -->
+        <link href="~/Content/build/css/custom.min.css" rel="stylesheet">
+    </head>
+    <body class="login">
+        <div class="loader">
+            <div class="loader3">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+       @* <div class="login-logo"></div>*@
+       @* <div class="login-logo-text">Welcome, <br /> Be Connected with the <b></b></div>*@
+        <div class="wr-login-left">
+            <div class="login_wrapper">
+                <div class="animate form login_form">
+                    <section class="login_content">
+                        <form id="form">
+                          @*  <img src="~/Content/images/logoInfox.png" />*@
+                            <h6>Welcome, Please Provide Your Details</h6>
+                            <fieldset id="SubmitForm">
+                                <div class="custom-login-border">
+                                    @Html.TextBoxFor(m => m.UserName, new { @id = "UserName", @class = "form-control", @placeholder = "Username*" })
+                                </div>
+                                <div class="custom-login-border">
+                                    @Html.PasswordFor(m => m.Password, new { @id = "Password", @class = "form-control", @placeholder = "Password*" })
+                                </div>
+                                <div class="text-right" style="margin-top:-30px">
+                                    <a href="#" class="text-primary" onclick="ResetPopupOpen()">Forget Password</a>
+                                </div>
+                                <div>
+                                    <a href="#" class="btn btn-default  btn-block" onclick="Login()">Sign In</a>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal top fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+            <div class="modal-dialog" style="width: 300px;">
+                <div class="modal-content text-center">
+                    <div class="modal-header h5 text-white bg-primary justify-content-center">
+                        Password Reset
+                    </div>
+                    <div class="modal-body px-5">
+                        <p class="py-2">
+                            Enter your user name and we'll send you an email with a temporary password to reset your password.
+                        </p>
+                        <div class="form-outline">
+                            <input type="email" id="resetUserName" class="form-control my-3" />
+                            <label class="form-label" for="resetUserName">User Name</label>
+                        </div>
+                        <a href="#" class="btn btn-primary w-100" id="btnResetPassword" onclick="ResetPassword()">Reset password</a>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a class="" href="#">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*@Scripts.Render("~/bundles/jqueryval")*@
+        <!-- jQuery -->
+        <script src="~/Content/vendors/jquery/dist/jquery.min.js"></script>
+        <!-- Bootstrap -->
+        <script src="~/Content/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function Login() {
+                var data = $("#SubmitForm").serialize();
+                $.ajax({
+                    type: "Post",
+                    url: "/Login/CheckLogin",
+                    data: data,
+                    success: function (result) {
+                        if (result.success && result.firstattempt) {
+                            //$.notify(result.message, "success");
+                            window.location.href = "/UserSecurity/ChangePassword";
+                        }
+                        else if (result.success) {
+                            //$.notify(result.message, "success");
+                            window.location.href = "/Home/DashBoard";
+                        }
+                        else {
+                            $.notify(result.message, "error");
+                        }
+
+                    }
+                })
+            }
+
+            function ResetPassword() {
+                $.ajax({
+                    type: "Post",
+                    url: "/Login/ResetPassword",
+                    data: { UserName: $("#resetUserName").val()},
+                    success: function (result) {
+                        if (result.success) {
+                            $.notify(result.message, "success");
+                            $("#exampleModal").modal("hide");
+                            $("#resetUserName").val('');
+                        }
+                        else {
+                            $.notify(result.message, "error");
+                        }
+
+                    }
+                })
+            }
+
+            function ResetPopupOpen() {
+                $("#exampleModal").modal("show");
+            }
+
+            $(window).load(function () {
+                // Animate loader off screen
+                $(".loader").fadeOut("slow");
+            });
+        </script>
+        <script src="~/Scripts/notify.min.js"></script>
+
+    </body>
+    </html>
+}
+
+
+
